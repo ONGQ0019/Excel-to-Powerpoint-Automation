@@ -1,0 +1,134 @@
+Sub excel_to_ppt()
+' Set a VBE reference to Microsoft PowerPoint Object Library
+
+Dim PPApp As PowerPoint.Application
+Dim PPPres As PowerPoint.Presentation
+Dim PPSlide As PowerPoint.Slide
+Dim PresentationFileName As Variant
+Dim SlideCount As Long
+Dim iCht As Integer
+
+ActiveWorkbook.RefreshAll
+
+' Reference existing instance of PowerPoint
+Set PPApp = GetObject(, "Powerpoint.Application")
+' Reference active presentation
+Set PPPres = PPApp.ActivePresentation
+PPApp.ActiveWindow.ViewType = ppViewSlide
+
+For iCht = 1 To ActiveSheet.ChartObjects.Count
+    ' copy chart as a picture
+    ActiveSheet.ChartObjects(iCht).Copy
+
+    ' Add a new slide and paste in the chart
+    SlideCount = PPPres.Slides.Count
+    Set PPSlide = PPPres.Slides.Add(SlideCount + 1, ppLayoutBlank)
+    PPApp.ActiveWindow.View.GotoSlide PPSlide.SlideIndex
+    With PPSlide
+        ' paste and select the chart picture
+        .Shapes.Paste.Select
+        ' align the chart
+        PPApp.ActiveWindow.Selection.ShapeRange.Align msoAlignCenters, True
+        PPApp.ActiveWindow.Selection.ShapeRange.Align msoAlignMiddles, True
+    End With
+
+Next
+Set PPSlide = Nothing
+Set PPPres = Nothing
+Set PPApp = Nothing
+
+End Sub
+
+
+Sub excel_to_new_ppt()
+' Set a VBE reference to Microsoft PowerPoint Object Library
+
+Dim PPApp As PowerPoint.Application
+Dim PPPres As PowerPoint.Presentation
+Dim PPSlide As PowerPoint.Slide
+Dim PresentationFileName As Variant
+Dim SlideCount As Long
+Dim iCht As Integer
+
+ActiveWorkbook.RefreshAll
+'Add Presentation
+Set PPApp = New PowerPoint.Application
+PPApp.Visible = msoCTrue
+PPApp.WindowState = ppWindowMaximized
+Set PPPresentation = PPApp.Presentations.Add
+
+'if no need new ppt then
+
+' Reference existing instance of PowerPoint
+Set PPApp = GetObject(, "Powerpoint.Application")
+' Reference active presentation
+Set PPPres = PPApp.ActivePresentation
+PPApp.ActiveWindow.ViewType = ppViewSlide
+
+For iCht = 1 To ActiveSheet.ChartObjects.Count
+    ' copy chart as a picture
+    ActiveSheet.ChartObjects(iCht).Copy
+
+    ' Add a new slide and paste in the chart
+    SlideCount = PPPres.Slides.Count
+    Set PPSlide = PPPres.Slides.Add(SlideCount + 1, ppLayoutBlank)
+    PPApp.ActiveWindow.View.GotoSlide PPSlide.SlideIndex
+    With PPSlide
+        ' paste and select the chart picture
+        .Shapes.Paste.Select
+        ' align the chart
+        PPApp.ActiveWindow.Selection.ShapeRange.Align msoAlignCenters, True
+        PPApp.ActiveWindow.Selection.ShapeRange.Align msoAlignMiddles, True
+    End With
+
+Next
+
+
+Set PPSlide = Nothing
+Set PPPres = Nothing
+Set PPApp = Nothing
+
+End Sub
+
+
+
+Sub selected_chart_to_ppt()
+' Uses Late Binding to the PowerPoint Object Model
+' No reference required to PowerPoint Object Library
+
+Dim PPApp As Object ' As PowerPoint.Application
+Dim PPPres As Object ' As PowerPoint.Presentation
+Dim PPSlide As Object ' As PowerPoint.Slide
+
+' Make sure a chart is selected
+If ActiveChart Is Nothing Then
+    MsgBox "Please select a chart and try again.", vbExclamation, _
+        "No Chart Selected"
+Else
+    ' Reference existing instance of PowerPoint
+    Set PPApp = GetObject(, "Powerpoint.Application")
+    ' Reference active presentation
+    Set PPPres = PPApp.ActivePresentation
+    PPApp.ActiveWindow.ViewType = 1 ' 1 = ppViewSlide
+    ' Reference active slide
+    Set PPSlide = PPPres.Slides _
+        (PPApp.ActiveWindow.Selection.SlideRange.SlideIndex)
+    
+    ' Copy chart as a picture
+ActiveChart.ChartArea.Copy
+    ' Paste chart
+    PPSlide.Shapes.Paste.Select
+    
+    ' Align pasted chart
+    PPApp.ActiveWindow.Selection.ShapeRange.Align msoAlignCenters, True
+    PPApp.ActiveWindow.Selection.ShapeRange.Align msoAlignMiddles, True
+
+
+    Set PPSlide = Nothing
+    Set PPPres = Nothing
+    Set PPApp = Nothing
+End If
+
+End Sub
+
+
